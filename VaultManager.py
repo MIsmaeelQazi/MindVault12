@@ -15,22 +15,22 @@ class VaultManager:
         self.StoragePath = StoragePath
         PathExists()
 
-    def _GetPath(self,NoteId)
+    def _GetPath(self,NoteId):
         SafeId = "".join(Char for Char in NoteId if Char.isalnum() or Char in ("-","_")).rstrip()
         return os.path.join(self.StoragePath, f"{SafeId}.md")
 
     def CreateOrUpdate(self,NoteId,Title,Content,Tags:List[str] = None) ->Dict:
         Tags = Tags or []
-        FilePath = self._GetFilePath(NoteId)
+        FilePath = self._GetPath(NoteId)
         NowTimeStamp = datetime.utcnow().isoformat()
 
-        MetaDate = {
+        MetaData = {
             "id": NoteId,
             "title":Title,
             "tags":Tags,
-            "Updated_at":NowTimeStamp
+            "updated_at":NowTimeStamp
         }
-        FileContent = f"<!--METADATA:{json.dumps(MetaData)} -->\n# {Title} \n\n {Content}"
+        FileContent = f"<!--METADATA:{json.dumps(MetaData)}-->\n# {Title}\n\n{Content}"
 
         with open(FilePath,"w",encoding="utf-8") as TargetFile:
             TargetFile.write(FileContent)
@@ -38,9 +38,9 @@ class VaultManager:
         return {**MetaData, "content":Content}
     
     def GetNote(self,NoteId):
-        FilePath = self._GetFilePath(NoteId)
+        FilePath = self._GetPath(NoteId)
         if not os.path.exists(FilePath):
-            return none 
+            return None 
         with open(FilePath,"r", encoding="utf-8") as TargetFile:
             RawData = TargetFile.read()
 
@@ -53,21 +53,21 @@ class VaultManager:
         return {"id":NoteId, "title":NoteId,"tags":[],"content":RawData,"updated_at":""}
     def ListNotes(self):
         NotesList =[ ]
-        FilePath = glob.glob(os.path.join(self.StoragePath,"*.md"))
+        FilePaths = glob.glob(os.path.join(self.StoragePath,"*.md"))
         for CurrentPath in FilePaths:
             NoteId = os.path.basename(CurrentPath).replace(".md","")
             NoteData = self.GetNote(NoteId)
             if NoteData:
                 NotesList.append({
                     "id": NoteData.get("id"),
-                    "title":NoteData.get("title")
+                    "title":NoteData.get("title"),
                     "tags":NoteData.get("tags", []),
                     "updated_at": NoteData.get("updated_at")
                 })
         return NotesList
 
     def DeleteNote(self,NoteId):
-        Filepath = self._GetfilePath(NoteId)
+        FilePath = self._GetPath(NoteId)
         if os.path.exists(FilePath):
             os.remove(FilePath)
             return True 
@@ -79,7 +79,7 @@ class VaultManager:
         SearchResults = []
 
         for MetaData in AllNotes:
-            FullNote = self.getNote(MetaData["id"])
+            FullNote = self.GetNote(MetaData["id"])
             if FullNote:
                 TitleMatch = QueryLower in FullNote["title"].lower()
                 ContentMatch = QueryLower in FullNote["content"].lower()
