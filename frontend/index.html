@@ -26,10 +26,18 @@
         <main id="mainContent">
             <header id="editorheader">
                 <input type="text" id="noteTitleInput" placeholder="Note Title...."/>
-                
+                <div class="header-actions">
+                    <button id="deleteNoteBtn" class="danger">Delete</button>
+                </div>
+            </header>
+            <div id="tagsContainer">
+                <input type="text" id="noteTagsInput" placeholder="Tags (comma seperated)..."/>
+            </div>
+            <textarea id="noteContentInput" placeholder="Write your thoughts in markdown...."></textarea>
 
         </main>
     </div>
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>
