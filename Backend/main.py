@@ -2,7 +2,7 @@ from fastapi import FastAPI,HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List,Optional
-from vault_manager import VaultManager
+from VaultManager import VaultManager
 
 THEAPP = FastAPI(title="MindVault API Core", version="2.0.0")
 THEAPP.add_middleware(
