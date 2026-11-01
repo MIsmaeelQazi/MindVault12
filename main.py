@@ -23,15 +23,18 @@ class NotePayload(BaseModel):
 @THEAPP.get("/api/health")
 def HealthCheck():
     return {"status":"online", "system":"MindVault Engine"}
+
 @THEAPP.get("/api/notes")
 def GetAllNotes():
     return TheVault.ListNotes()
+
 @THEAPP.get("/api/notes/{NoteId}")
 def GetNote(NoteId:str):
     TheNote = TheVault.GetNote(NoteId)
     if not TheNote:
         raise HTTPException(status_code=404, detail="Note not found")
     return TheNote
+
 @THEAPP.post("/api/notes/{NoteId}")
 def SaveNote(NoteId:str, Payload:NotePayload):
     return TheVault.CreateOrUpdate(
@@ -42,13 +45,13 @@ def SaveNote(NoteId:str, Payload:NotePayload):
     )
 
 @THEAPP.delete("/api/notes/{NoteId}")
-def DeleteNote(NoteId):
+def DeleteNote(NoteId:str):
     IsDeleted = TheVault.DeleteNote(NoteId)
     if not IsDeleted:
         raise HTTPException(status_code=404, detail="Note not found or could not be deleted")
     return {"status":"deleted","id":NoteId}
 @THEAPP.get("/api/search")
-def SearchNotes(Q=Query(...,min_length=1)):
+def SearchNotes(Q:str = Query(...,min_length=1)):
     return TheVault.SearchNotes(Q)
 
 if __name__ == "__main__":
